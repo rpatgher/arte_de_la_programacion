@@ -14,9 +14,10 @@ from turtle import *
 from freegames import vector
 
 ball = vector(-200, -200)
-speed = vector(0, 0)
+speed = vector(5, 5)
 targets = []
-
+gravity = 0.35
+score = 0
 
 def tap(x, y):
     """Respond to screen tap."""
@@ -44,10 +45,16 @@ def draw():
         goto(ball.x, ball.y)
         dot(6, 'red')
 
+
+    goto(-190, 190)
+    write(f'Score: {score}', font=('Arial', 14, 'normal'))
+
     update()
 
 
 def move():
+    global score, gravity
+
     """Move ball and targets."""
     if randrange(40) == 0:
         y = randrange(-150, 150)
@@ -56,9 +63,10 @@ def move():
 
     for target in targets:
         target.x -= 0.5
+        target.y -= 0.1
 
     if inside(ball):
-        speed.y -= 0.35
+        speed.y -= gravity
         ball.move(speed)
 
     dupe = targets.copy()
@@ -67,6 +75,8 @@ def move():
     for target in dupe:
         if abs(target - ball) > 13:
             targets.append(target)
+        else:
+            score += 1
 
     draw()
 
@@ -74,7 +84,15 @@ def move():
         if not inside(target):
             return
 
+    gravity = randrange(10, 40) / 100
+
     ontimer(move, 50)
+
+def change_speed(new_speed):
+    """Cambiar la velocidad de la bola."""
+    global speed
+    speed.x *= new_speed
+    speed.y *= new_speed
 
 
 setup(420, 420, 370, 0)
