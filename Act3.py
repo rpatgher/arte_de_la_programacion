@@ -20,20 +20,11 @@ writer = Turtle(visible=False)
 aim = vector(5, 0)
 pacman = vector(-80, -80)  # Cambiado el punto de inicio de Pacman
 
-# Parámetros para los Fantasmas
-NUMBER_OF_GHOSTS = 3  # Cambiado el número de fantasmas
-GHOST_SPEED = 5       # Velocidad de los fantasmas
-
-# Inicialización de los Fantasmas con posiciones y direcciones iniciales
-initial_ghost_positions = [
-    vector(100, 100),
-    vector(-100, 100),
-    vector(100, -100),
-    vector(-100, -100),  # Este fantasma no se usará si NUMBER_OF_GHOSTS = 3
-]
 ghosts = [
-    [initial_ghost_positions[i], vector(GHOST_SPEED, 0)]
-    for i in range(NUMBER_OF_GHOSTS)
+    [vector(-180, 160), vector(5, 0)],
+    [vector(-180, -160), vector(0, 5)],
+    [vector(100, 160), vector(0, -5)],
+    [vector(100, -160), vector(-5, 0)],
 ]
 
 # Nuevo Diseño del Tablero (Cambiar el tablero)
@@ -136,46 +127,31 @@ def move():
     dot(20, 'yellow')
 
     for point, course in ghosts:
-        # Hacer que los fantasmas sean más inteligentes (Mover hacia Pacman)
         if valid(point + course):
-            # Calcular la dirección hacia Pacman
-            direction = pacman - point
-            if direction.x > 0:
-                new_course = vector(GHOST_SPEED, 0)
-            elif direction.x < 0:
-                new_course = vector(-GHOST_SPEED, 0)
-            elif direction.y > 0:
-                new_course = vector(0, GHOST_SPEED)
-            else:
-                new_course = vector(0, -GHOST_SPEED)
-
-            # Verificar si la nueva dirección es válida
-            if valid(point + new_course):
-                course.x = new_course.x
-                course.y = new_course.y
-            else:
-                # Si no es válida, elegir una dirección aleatoria válida
-                options = [
-                    vector(GHOST_SPEED, 0),
-                    vector(-GHOST_SPEED, 0),
-                    vector(0, GHOST_SPEED),
-                    vector(0, -GHOST_SPEED),
-                ]
-                random_direction = choice(options)
-                if valid(point + random_direction):
-                    course.x = random_direction.x
-                    course.y = random_direction.y
+            point.move(course)
         else:
-            # Elegir una nueva dirección aleatoria válida
             options = [
-                vector(GHOST_SPEED, 0),
-                vector(-GHOST_SPEED, 0),
-                vector(0, GHOST_SPEED),
-                vector(0, -GHOST_SPEED),
+                vector(5, 0),
+                vector(-5, 0),
+                vector(0, 5),
+                vector(0, -5),
             ]
-            course.x, course.y = choice(options)
-
-        point.move(course)
+            
+            # Elige una dirección inteligente para los fantasmas
+            smart_choice = None
+            min_distance = float('inf')
+            
+            for option in options:
+                new_point = point + option
+                if valid(new_point):
+                    distance = abs(pacman - new_point)
+                    if distance < min_distance:
+                        smart_choice = option
+                        min_distance = distance
+            
+            if smart_choice:
+                course.x = smart_choice.x
+                course.y = smart_choice.y
 
         up()
         goto(point.x + 10, point.y + 10)
@@ -185,12 +161,9 @@ def move():
 
     for point, course in ghosts:
         if abs(pacman - point) < 20:
-            writer.goto(0, 0)
-            writer.color('red')
-            writer.write("GAME OVER", align="center", font=("Times Roman", 24, "normal"))
             return
 
-    ontimer(move, 50)  # Puedes ajustar este valor para cambiar la velocidad de Pacman
+    ontimer(move, 50)  # Aumenta la velocidad de los fantasmas
 
 def change(x, y):
     """Cambia la dirección de Pacman si es válida."""
