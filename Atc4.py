@@ -16,7 +16,9 @@ from freegames import vector
 ball = vector(-200, -200)
 speed = vector(5, 5)
 targets = []
+# Variable para la gravedad
 gravity = 0.35
+# Variable para el puntaje
 score = 0
 
 def tap(x, y):
@@ -46,6 +48,7 @@ def draw():
         dot(6, 'red')
 
 
+    # Muestra el puntaje en la pantalla
     goto(-190, 190)
     write(f'Score: {score}', font=('Arial', 14, 'normal'))
 
@@ -53,19 +56,23 @@ def draw():
 
 
 def move():
+    """Move ball and targets."""
+
+
+    # Variables globales
     global score, gravity
 
-    """Move ball and targets."""
     if randrange(40) == 0:
         y = randrange(-150, 150)
         target = vector(200, y)
         targets.append(target)
 
     for target in targets:
-        target.x -= 0.5
+        target.x -= 0.5 
         target.y -= 0.1
 
     if inside(ball):
+        # Aplica la gravedad a la velocidad de la bola
         speed.y -= gravity
         ball.move(speed)
 
@@ -91,6 +98,7 @@ def move():
 def change_speed(new_speed):
     """Cambiar la velocidad de la bola."""
     global speed
+    # Multiplica la velocidad actual por la nueva velocidad
     speed.x *= new_speed
     speed.y *= new_speed
 

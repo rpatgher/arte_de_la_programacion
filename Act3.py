@@ -141,15 +141,21 @@ def move():
             smart_choice = None
             min_distance = float('inf')
             
+            # Recorre las opciones de movimiento
             for option in options:
                 new_point = point + option
+                # Si la nueva posición es válida
                 if valid(new_point):
+                    # Calcula la distancia entre el fantasma y Pacman
                     distance = abs(pacman - new_point)
                     if distance < min_distance:
+                        # Actualiza la mejor opción
                         smart_choice = option
                         min_distance = distance
             
+            # Si se encontró una mejor opción
             if smart_choice:
+                # Actualiza la dirección del fantasma
                 course.x = smart_choice.x
                 course.y = smart_choice.y
 
